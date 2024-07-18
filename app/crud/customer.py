@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from models import models
 import models
 
 def get_customer(db: Session, customer_id: int):
