@@ -43,7 +43,7 @@ def create_customer(customer: Customer, db: Session = Depends(get_db)):
     return db_customer
 
 @router.put("/customers/{customer_id}", response_model=Customer)
-def update_customer(customer_id: int, customer: CustomerUpdate, db: Session = Depends(get_db)):
+def update_customer(customer_id: int, customer: Customer, db: Session = Depends(get_db)):
     db_customer = db.query(DBCustomer).filter(DBCustomer.costumer_id == customer_id).first()
     if db_customer:
         for var, value in vars(customer).items():
