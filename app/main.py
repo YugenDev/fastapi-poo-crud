@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from crud.customer import router as customer_router
+from crud.employee import router as employee_router
 from database.database import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -17,3 +18,4 @@ app.add_middleware(
 
 # Routers para cada modelo
 app.include_router(customer_router, prefix="/customers", tags=["customers"])
+app.include_router(customer_router, prefix="/employees", tags=["employees"])
