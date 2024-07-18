@@ -1,7 +1,7 @@
 -- Crear la base de datos TiendaJPBB
 CREATE DATABASE TiendaJPBB;
 
--- Crear la tabla costumer (cliente)
+-- Crear la tabla customer (cliente)
 CREATE TABLE customer (
     customer_id serial PRIMARY KEY,
     customer_name varchar(55) NOT NULL,
@@ -45,13 +45,13 @@ CREATE TABLE product (
 CREATE TABLE sales (
     sale_id serial PRIMARY KEY,
     sale_date timestamp NOT NULL,
-    costumer_id int NOT NULL,
+    customer_id int NOT NULL,
     product_id int NOT NULL,
     price float NOT NULL,
     quantity int NOT NULL,
     total float GENERATED ALWAYS AS (price * quantity) STORED,
     employee_id int NOT NULL,
-    CONSTRAINT fk_costumer FOREIGN KEY (costumer_id) REFERENCES costumer(costumer_id),
+    CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
     CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES product(product_id),
     CONSTRAINT fk_employee FOREIGN KEY (employee_id) REFERENCES employee(employee_id)
 );
