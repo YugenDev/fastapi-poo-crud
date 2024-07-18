@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from crud.customer import router as customer_router
-from database import engine, Base
+from database.database import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
