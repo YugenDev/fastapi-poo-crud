@@ -2,13 +2,13 @@
 CREATE DATABASE TiendaJPBB;
 
 -- Crear la tabla costumer (cliente)
-CREATE TABLE costumer (
-    costumer_id serial PRIMARY KEY,
-    costumer_name varchar(55) NOT NULL,
-    costumer_last_name varchar(55) NOT NULL,
+CREATE TABLE customer (
+    customer_id serial PRIMARY KEY,
+    customer_name varchar(55) NOT NULL,
+    customer_last_name varchar(55) NOT NULL,
     email varchar(55) NOT NULL,
-    costumer_password varchar(8) NOT NULL,
-    costumer_type varchar(55) NOT NULL,
+    customer_password varchar(8) NOT NULL,
+    customer_type varchar(55) NOT NULL,
     points int NOT NULL
 );
 
