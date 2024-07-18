@@ -26,11 +26,13 @@ def get_db():
     finally:
         db.close()
 
+# Metodo para obtener todos los clientes
 @router.get("/customers/", response_model=list[Customer])
 def get_customers(db: Session = Depends(get_db)):
     customers = db.query(DBCustomer).all()
     return customers
 
+# Metodo para obtener un cliente por su id
 @router.get("/customers/{customer_id}", response_model=Customer)
 def read_customer(customer_id: int, db: Session = Depends(get_db)):
     db_customer = db.query(DBCustomer).filter(DBCustomer.customer_id == customer_id).first()
@@ -38,6 +40,7 @@ def read_customer(customer_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Customer not found")
     return db_customer
 
+# Metodo para crear un cliente
 @router.post("/customers/", response_model=Customer)
 def create_customer(customer: Customer, db: Session = Depends(get_db)):
     db_customer = DBCustomer(**customer.dict())
@@ -46,6 +49,7 @@ def create_customer(customer: Customer, db: Session = Depends(get_db)):
     db.refresh(db_customer)
     return db_customer
 
+# Metodo para actualizar un cliente
 @router.put("/customers/{customer_id}", response_model=Customer)
 def update_customer(customer_id: int, customer: Customer, db: Session = Depends(get_db)):
     db_customer = db.query(DBCustomer).filter(DBCustomer.customer_id == customer_id).first()

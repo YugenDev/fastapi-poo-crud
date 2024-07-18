@@ -1,0 +1,20 @@
+version: '2.29.0'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+    environment:
+      - SQLALCHEMY_DATABASE_URL=postgresql://myuser:mypassword@db/TiendaJPBB
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: TiendaJPBB
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - "5432:5432"
