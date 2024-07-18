@@ -11,3 +11,12 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+
+try:
+    with engine.connect() as connection:
+        result = connection.execute(text("SELECT 1"))
+        assert result.scalar() == 1
+        print("Conexión exitosa a la base de datos!")
+except Exception as e:
+    print(f"Error al conectar a la base de datos: {str(e)}")
