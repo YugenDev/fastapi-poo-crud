@@ -1,10 +1,11 @@
 from fastapi import FastAPI
-from api.usuario_api import router as usuario_router
-from api.registro_emocional_api import router as registro_emocional_router
+from crud.customer import router as customer_router
+from database import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+Base.metadata.create_all(bind=engine)
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,4 +16,4 @@ app.add_middleware(
 )
 
 # Routers para cada modelo
-app.include_router(customer.router, prefix="/customers", tags=["customers"])
+app.include_router(customer_router, prefix="/customers", tags=["customers"])
