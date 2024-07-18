@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from database.database import SessionLocal
 from models.models import Sale as DBSale, Customer, Product, Employee
+from sqlalchemy import func
 
 router = APIRouter()
 
@@ -45,7 +46,15 @@ def read_sale(sale_id: int, db: Session = Depends(get_db)):
 # Metodo para crear una venta
 @router.post("/sales/", response_model=Sale)
 def create_sale(sale: Sale, db: Session = Depends(get_db)):
-    db_sale = DBSale(**sale.dict())
+    db_sale = DBSale(
+        sale_date=func.now(),  # Utilizamos func.now() de SQLAlchemy para la fecha actual
+        customer_id=sale.customer_id,
+        product_id=sale.product_id,
+        price=sale.price,
+        quantity=sale.quantity,
+        total=sale.total,
+        employee_id=sale.employee_id
+    )
     db.add(db_sale)
     db.commit()
     db.refresh(db_sale)
@@ -56,7 +65,7 @@ def create_sale(sale: Sale, db: Session = Depends(get_db)):
 def update_sale(sale_id: int, sale: Sale, db: Session = Depends(get_db)):
     db_sale = db.query(DBSale).filter(DBSale.sale_id == sale_id).first()
     if db_sale:
-        db_sale.sale_date = sale.sale_date
+        db_sale.sale_date = func.now()  # Actualizamos la fecha de venta con la fecha actual
         db_sale.customer_id = sale.customer_id
         db_sale.product_id = sale.product_id
         db_sale.price = sale.price
