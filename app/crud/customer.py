@@ -6,7 +6,7 @@ from models.models import Customer as DBCustomer
 
 router = APIRouter()
 
-# Esquema para la creación de un nuevo cliente
+# Esquema universal de pydantic para operaciones
 class Customer(BaseModel):
     costumer_name: str
     costumer_last_name: str
