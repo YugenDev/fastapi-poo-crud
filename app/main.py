@@ -14,4 +14,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+# Routers para cada modelo
+app.include_router(customer.router, prefix="/customers", tags=["customers"])
