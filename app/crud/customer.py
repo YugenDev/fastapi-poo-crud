@@ -7,7 +7,7 @@ from models.models import Customer as DBCustomer
 router = APIRouter()
 
 # Esquema para la creación de un nuevo cliente
-class CustomerCreate(BaseModel):
+class Customer(BaseModel):
     costumer_name: str
     costumer_last_name: str
     email: str
@@ -15,17 +15,9 @@ class CustomerCreate(BaseModel):
     costumer_type: str
     points: int
 
-# Esquema para la actualización de un cliente existente
-class CustomerUpdate(BaseModel):
-    costumer_name: str = None
-    costumer_last_name: str = None
-    email: str = None
-    costumer_password: str = None
-    costumer_type: str = None
-    points: int = None
-
     class Config:
         orm_mode = True
+
 
 # Función para obtener la sesión de la base de datos
 def get_db():
@@ -43,7 +35,7 @@ def read_customer(customer_id: int, db: Session = Depends(get_db)):
     return db_customer
 
 @router.post("/customers/", response_model=Customer)
-def create_customer(customer: CustomerCreate, db: Session = Depends(get_db)):
+def create_customer(customer: Customer, db: Session = Depends(get_db)):
     db_customer = DBCustomer(**customer.dict())
     db.add(db_customer)
     db.commit()
