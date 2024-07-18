@@ -8,16 +8,15 @@ router = APIRouter()
 
 # Esquema universal de pydantic para operaciones
 class Customer(BaseModel):
-    costumer_name: str
-    costumer_last_name: str
+    customer_name: str
+    customer_last_name: str
     email: str
-    costumer_password: str
-    costumer_type: str
+    customer_password: str
+    customer_type: str
     points: int
 
     class Config:
         orm_mode = True
-
 
 # Función para obtener la sesión de la base de datos
 def get_db():
@@ -29,7 +28,7 @@ def get_db():
 
 @router.get("/customers/{customer_id}", response_model=Customer)
 def read_customer(customer_id: int, db: Session = Depends(get_db)):
-    db_customer = db.query(DBCustomer).filter(DBCustomer.costumer_id == customer_id).first()
+    db_customer = db.query(DBCustomer).filter(DBCustomer.customer_id == customer_id).first()
     if db_customer is None:
         raise HTTPException(status_code=404, detail="Customer not found")
     return db_customer
@@ -44,17 +43,23 @@ def create_customer(customer: Customer, db: Session = Depends(get_db)):
 
 @router.put("/customers/{customer_id}", response_model=Customer)
 def update_customer(customer_id: int, customer: Customer, db: Session = Depends(get_db)):
-    db_customer = db.query(DBCustomer).filter(DBCustomer.costumer_id == customer_id).first()
+    db_customer = db.query(DBCustomer).filter(DBCustomer.customer_id == customer_id).first()
     if db_customer:
-        for var, value in vars(customer).items():
-            setattr(db_customer, var, value)
+        # Actualizar los atributos del cliente
+        db_customer.customer_name = customer.customer_name
+        db_customer.customer_last_name = customer.customer_last_name
+        db_customer.email = customer.email
+        db_customer.customer_password = customer.customer_password
+        db_customer.customer_type = customer.customer_type
+        db_customer.points = customer.points
+
         db.commit()
         db.refresh(db_customer)
     return db_customer
 
 @router.delete("/customers/{customer_id}", response_model=Customer)
 def delete_customer(customer_id: int, db: Session = Depends(get_db)):
-    db_customer = db.query(DBCustomer).filter(DBCustomer.costumer_id == customer_id).first()
+    db_customer = db.query(DBCustomer).filter(DBCustomer.customer_id == customer_id).first()
     if db_customer:
         db.delete(db_customer)
         db.commit()
