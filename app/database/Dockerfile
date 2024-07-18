@@ -8,3 +8,5 @@ ENV POSTGRES_PASSWORD mypassword
 
 # Copia el archivo init.sql al contenedor Docker
 COPY ./init.sql /docker-entrypoint-initdb.d/
+
+CMD [ "postgres" ]
