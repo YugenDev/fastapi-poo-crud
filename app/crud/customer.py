@@ -66,6 +66,7 @@ def update_customer(customer_id: int, customer: Customer, db: Session = Depends(
         db.refresh(db_customer)
     return db_customer
 
+# Metodo para eliminar un cliente
 @router.delete("/customers/{customer_id}", response_model=Customer)
 def delete_customer(customer_id: int, db: Session = Depends(get_db)):
     db_customer = db.query(DBCustomer).filter(DBCustomer.customer_id == customer_id).first()
