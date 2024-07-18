@@ -1,0 +1,4 @@
+Comandos de docker para crear la imagen y correr el contenedor de la BD
+
+docker build . -t database
+docker run -d --name database-container -p 54321:5432 database
