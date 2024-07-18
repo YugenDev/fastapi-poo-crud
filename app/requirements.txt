@@ -20,6 +20,7 @@ markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
 orjson==3.10.6
+psycopg2-binary==2.9.9
 pydantic==2.8.2
 pydantic-extra-types==2.9.0
 pydantic-settings==2.3.4
