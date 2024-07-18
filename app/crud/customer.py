@@ -26,6 +26,11 @@ def get_db():
     finally:
         db.close()
 
+@router.get("/customers/", response_model=list[Customer])
+def get_customers(db: Session = Depends(get_db)):
+    customers = db.query(DBCustomer).all()
+    return customers
+
 @router.get("/customers/{customer_id}", response_model=Customer)
 def read_customer(customer_id: int, db: Session = Depends(get_db)):
     db_customer = db.query(DBCustomer).filter(DBCustomer.customer_id == customer_id).first()
