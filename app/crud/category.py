@@ -13,6 +13,11 @@ class Category(BaseModel):
     class Config:
         from_attributes = True
 
+# Esquema de pydantic con el id incluido para operar con el
+class GetCategoryID(BaseException):
+    category_id: int
+    category_name: str
+
 # Función para obtener la sesión de la base de datos
 def get_db():
     db = SessionLocal()
@@ -22,13 +27,13 @@ def get_db():
         db.close()
 
 # Metodo para obtener todas las categorías
-@router.get("/categories/", response_model=list[Category])
+@router.get("/categories/", response_model=list[GetCategoryID])
 def get_categories(db: Session = Depends(get_db)):
     categories = db.query(DBCategory).all()
     return categories
 
 # Metodo para obtener una categoría por su id
-@router.get("/categories/{category_id}", response_model=Category)
+@router.get("/categories/{category_id}", response_model=GetCategoryID)
 def read_category(category_id: int, db: Session = Depends(get_db)):
     db_category = db.query(DBCategory).filter(DBCategory.category_id == category_id).first()
     if db_category is None:
@@ -45,7 +50,7 @@ def create_category(category: Category, db: Session = Depends(get_db)):
     return db_category
 
 # Metodo para actualizar una categoría
-@router.put("/categories/{category_id}", response_model=Category)
+@router.put("/categories/{category_id}", response_model=GetCategoryID)
 def update_category(category_id: int, category: Category, db: Session = Depends(get_db)):
     db_category = db.query(DBCategory).filter(DBCategory.category_id == category_id).first()
     if db_category:
@@ -55,7 +60,7 @@ def update_category(category_id: int, category: Category, db: Session = Depends(
     return db_category
 
 # Metodo para eliminar una categoría
-@router.delete("/categories/{category_id}", response_model=Category)
+@router.delete("/categories/{category_id}", response_model=GetCategoryID)
 def delete_category(category_id: int, db: Session = Depends(get_db)):
     db_category = db.query(DBCategory).filter(DBCategory.category_id == category_id).first()
     if db_category:
