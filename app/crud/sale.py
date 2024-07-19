@@ -20,6 +20,16 @@ class Sale(BaseModel):
     class Config:
         from_attributes = True
 
+# Esquema para obtener una venta
+class GetSale(BaseModel):
+    sale_date: datetime = Field(default_factory=datetime.utcnow)
+    customer_id: int
+    product_id: int
+    price: float
+    quantity: int
+    total: float
+    employee_id: int
+
 # Función para obtener la sesión de la base de datos
 def get_db():
     db = SessionLocal()
@@ -29,7 +39,7 @@ def get_db():
         db.close()
 
 # Metodo para obtener todas las ventas
-@router.get("/sales/", response_model=list[Sale])
+@router.get("/sales/", response_model=list[GetSale])
 def get_sales(db: Session = Depends(get_db)):
     sales = db.query(DBSale).all()
     return sales
