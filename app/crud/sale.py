@@ -15,7 +15,7 @@ class Sale(BaseModel):
     product_id: int
     price: float
     quantity: int
-    total: float
+    total: price * quantity
     employee_id: int
 
     class Config:
