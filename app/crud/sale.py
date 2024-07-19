@@ -20,8 +20,9 @@ class Sale(BaseModel):
     class Config:
         from_attributes = True
 
-# Esquema para obtener una venta
+# Esquema para obtener una venta con id incluido
 class GetSale(BaseModel):
+    sale_id: int
     sale_date: datetime = Field(default_factory=datetime.utcnow)
     customer_id: int
     product_id: int
