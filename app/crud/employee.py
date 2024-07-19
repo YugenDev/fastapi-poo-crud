@@ -17,7 +17,7 @@ class Employee(BaseModel):
     position: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Función para obtener la sesión de la base de datos
 def get_db():
