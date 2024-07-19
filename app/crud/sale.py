@@ -45,7 +45,7 @@ def get_sales(db: Session = Depends(get_db)):
     return sales
 
 # Metodo para obtener una venta por su id
-@router.get("/sales/{sale_id}", response_model=Sale)
+@router.get("/sales/{sale_id}", response_model=GetSale)
 def read_sale(sale_id: int, db: Session = Depends(get_db)):
     db_sale = db.query(DBSale).filter(DBSale.sale_id == sale_id).first()
     if db_sale is None:
