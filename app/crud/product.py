@@ -18,6 +18,19 @@ class Product(BaseModel):
     class Config:
         from_attributes = True
 
+# Esquema de pydantic con el id incluido para operar con el
+class GetProductID(BaseModel):
+    product_id: int
+    product_name: str
+    description: str
+    category_id: int
+    price: float
+    quantity: int
+    brand: str
+
+    class Config:
+        from_attributes = True
+
 # Función para obtener la sesión de la base de datos
 def get_db():
     db = SessionLocal()
@@ -27,13 +40,13 @@ def get_db():
         db.close()
 
 # Metodo para obtener todos los productos
-@router.get("/products/", response_model=list[Product])
+@router.get("/products/", response_model=list[GetProductID])
 def get_products(db: Session = Depends(get_db)):
     products = db.query(DBProduct).all()
     return products
 
 # Metodo para obtener un producto por su id
-@router.get("/products/{product_id}", response_model=Product)
+@router.get("/products/{product_id}", response_model=GetProductID)
 def read_product(product_id: int, db: Session = Depends(get_db)):
     db_product = db.query(DBProduct).filter(DBProduct.product_id == product_id).first()
     if db_product is None:
@@ -50,7 +63,7 @@ def create_product(product: Product, db: Session = Depends(get_db)):
     return db_product
 
 # Metodo para actualizar un producto
-@router.put("/products/{product_id}", response_model=Product)
+@router.put("/products/{product_id}", response_model=GetProductID)
 def update_product(product_id: int, product: Product, db: Session = Depends(get_db)):
     db_product = db.query(DBProduct).filter(DBProduct.product_id == product_id).first()
     if db_product:
@@ -66,7 +79,7 @@ def update_product(product_id: int, product: Product, db: Session = Depends(get_
     return db_product
 
 # Metodo para eliminar un producto
-@router.delete("/products/{product_id}", response_model=Product)
+@router.delete("/products/{product_id}", response_model=GetProductID)
 def delete_product(product_id: int, db: Session = Depends(get_db)):
     db_product = db.query(DBProduct).filter(DBProduct.product_id == product_id).first()
     if db_product:

@@ -18,6 +18,19 @@ class Customer(BaseModel):
     class Config:
         from_attributes = True
 
+# Esquema de pydantic con el id incluido para operar con el
+class GetCustomerID(BaseModel):
+    customer_id: int
+    customer_name: str
+    customer_last_name: str
+    email: str
+    customer_password: str
+    customer_type: str
+    points: int
+
+    class Config:
+        from_attributes = True
+
 # Función para obtener la sesión de la base de datos
 def get_db():
     db = SessionLocal()
@@ -33,7 +46,7 @@ def get_customers(db: Session = Depends(get_db)):
     return customers
 
 # Metodo para obtener un cliente por su id
-@router.get("/customers/{customer_id}", response_model=Customer)
+@router.get("/customers/{customer_id}", response_model=GetCustomerID)
 def read_customer(customer_id: int, db: Session = Depends(get_db)):
     db_customer = db.query(DBCustomer).filter(DBCustomer.customer_id == customer_id).first()
     if db_customer is None:
@@ -50,7 +63,7 @@ def create_customer(customer: Customer, db: Session = Depends(get_db)):
     return db_customer
 
 # Metodo para actualizar un cliente
-@router.put("/customers/{customer_id}", response_model=Customer)
+@router.put("/customers/{customer_id}", response_model=GetCustomerID)
 def update_customer(customer_id: int, customer: Customer, db: Session = Depends(get_db)):
     db_customer = db.query(DBCustomer).filter(DBCustomer.customer_id == customer_id).first()
     if db_customer:
@@ -67,7 +80,7 @@ def update_customer(customer_id: int, customer: Customer, db: Session = Depends(
     return db_customer
 
 # Metodo para eliminar un cliente
-@router.delete("/customers/{customer_id}", response_model=Customer)
+@router.delete("/customers/{customer_id}", response_model=GetCustomerID)
 def delete_customer(customer_id: int, db: Session = Depends(get_db)):
     db_customer = db.query(DBCustomer).filter(DBCustomer.customer_id == customer_id).first()
     if db_customer:

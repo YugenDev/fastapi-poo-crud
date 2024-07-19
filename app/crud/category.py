@@ -18,6 +18,9 @@ class GetCategoryID(BaseModel):
     category_id: int
     category_name: str
 
+    class Config:
+        from_attributes = True
+
 # Función para obtener la sesión de la base de datos
 def get_db():
     db = SessionLocal()

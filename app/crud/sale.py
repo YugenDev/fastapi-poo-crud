@@ -30,6 +30,9 @@ class GetSale(BaseModel):
     total: float
     employee_id: int
 
+    class Config:
+        from_attributes = True
+
 # Función para obtener la sesión de la base de datos
 def get_db():
     db = SessionLocal()
