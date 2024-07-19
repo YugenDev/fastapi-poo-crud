@@ -14,7 +14,7 @@ class Category(BaseModel):
         from_attributes = True
 
 # Esquema de pydantic con el id incluido para operar con el
-class GetCategoryID(BaseException):
+class GetCategoryID(BaseModel):
     category_id: int
     category_name: str
 
