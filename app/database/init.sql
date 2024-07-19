@@ -7,7 +7,7 @@ CREATE TABLE customer (
     customer_name varchar(55) NOT NULL,
     customer_last_name varchar(55) NOT NULL,
     email varchar(55) NOT NULL,
-    customer_password varchar(8) NOT NULL,
+    customer_password text NOT NULL,
     customer_type varchar(55) NOT NULL,
     points int NOT NULL
 );
@@ -24,7 +24,7 @@ CREATE TABLE employee (
     employee_name varchar(55) NOT NULL,
     employee_last_name varchar(55) NOT NULL,
     email varchar(55) NOT NULL,
-    employee_password varchar(8) NOT NULL,
+    employee_password text NOT NULL,
     salary float NOT NULL,
     position varchar(55) NOT NULL
 );

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Text
 from sqlalchemy.orm import relationship, backref, column_property
 from database.database import Base
 
@@ -9,7 +9,7 @@ class Customer(Base):
     customer_name = Column(String(55), nullable=False)
     customer_last_name = Column(String(55), nullable=False)
     email = Column(String(55), nullable=False, unique=True)
-    customer_password = Column(String(8), nullable=False)
+    customer_password = Column(Text, nullable=False)
     customer_type = Column(String(55), nullable=False)
     points = Column(Integer, nullable=False)
 
@@ -23,7 +23,7 @@ class Employee(Base):
     employee_name = Column(String(55), nullable=False)
     employee_last_name = Column(String(55), nullable=False)
     email = Column(String(55), nullable=False, unique=True)
-    employee_password = Column(String(8), nullable=False)
+    employee_password = Column(Text, nullable=False)
     salary = Column(Float, nullable=False)
     position = Column(String(55), nullable=False)
 
