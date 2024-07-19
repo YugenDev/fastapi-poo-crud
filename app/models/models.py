@@ -5,7 +5,7 @@ from database.database import Base
 class Customer(Base):
     __tablename__ = "customer"
 
-    customer_id = Column(Integer, primary_key=True, index=True)
+    customer_id = Column(Integer, autoincrement=True, primary_key=True, index=True)
     customer_name = Column(String(55), nullable=False)
     customer_last_name = Column(String(55), nullable=False)
     email = Column(String(55), nullable=False, unique=True)
@@ -19,7 +19,7 @@ class Customer(Base):
 class Employee(Base):
     __tablename__ = "employee"
 
-    employee_id = Column(Integer, primary_key=True, index=True)
+    employee_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     employee_name = Column(String(55), nullable=False)
     employee_last_name = Column(String(55), nullable=False)
     email = Column(String(55), nullable=False, unique=True)
