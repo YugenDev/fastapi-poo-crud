@@ -11,6 +11,7 @@ services:
       - SQLALCHEMY_DATABASE_URL=postgresql://myuser:mypassword@db/TiendaJPBB
 
   db:
+    build: ./database
     image: postgres:latest
     environment:
       POSTGRES_DB: TiendaJPBB

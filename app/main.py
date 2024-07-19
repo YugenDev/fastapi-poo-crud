@@ -21,7 +21,7 @@ app.add_middleware(
 
 # Routers para cada modelo
 app.include_router(customer_router, prefix="/customers", tags=["customers"])
-app.include_router(customer_router, prefix="/employees", tags=["employees"])
+app.include_router(employee_router, prefix="/employees", tags=["employees"])
 app.include_router(product_router, prefix="/products", tags=["products"])
 app.include_router(sale_router, prefix="/sales", tags=["sales"])
 app.include_router(category_router, prefix="/categories", tags=["categories"])
