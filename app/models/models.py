@@ -1,11 +1,11 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
-from sqlalchemy.orm import relationship, column_property
+from sqlalchemy.orm import relationship, backref, column_property
 from database.database import Base
 
 class Customer(Base):
     __tablename__ = "customer"
 
-    customer_id = Column(Integer, autoincrement=True, primary_key=True, index=True)
+    customer_id = Column(Integer, primary_key=True, autoincrement=True)
     customer_name = Column(String(55), nullable=False)
     customer_last_name = Column(String(55), nullable=False)
     email = Column(String(55), nullable=False, unique=True)
@@ -14,12 +14,12 @@ class Customer(Base):
     points = Column(Integer, nullable=False)
 
     # Relación con ventas (uno a muchos)
-    sales = relationship("Sale", back_populates="customer")
+    sales = relationship("Sale", back_populates="customer", cascade="all, delete-orphan")
 
 class Employee(Base):
     __tablename__ = "employee"
 
-    employee_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    employee_id = Column(Integer, primary_key=True, autoincrement=True)
     employee_name = Column(String(55), nullable=False)
     employee_last_name = Column(String(55), nullable=False)
     email = Column(String(55), nullable=False, unique=True)
@@ -28,7 +28,7 @@ class Employee(Base):
     position = Column(String(55), nullable=False)
 
     # Relación con ventas (uno a muchos)
-    sales = relationship("Sale", back_populates="employee")
+    sales = relationship("Sale", back_populates="employee", cascade="all, delete-orphan")
 
 class Category(Base):
     __tablename__ = 'category'
@@ -37,7 +37,7 @@ class Category(Base):
     category_name = Column(String(55), nullable=False)
 
     # Relación con productos (uno a muchos)
-    products = relationship("Product", back_populates="category")
+    products = relationship("Product", back_populates="category", cascade="all, delete-orphan")
 
 class Product(Base):
     __tablename__ = 'product'
@@ -54,7 +54,7 @@ class Product(Base):
     category = relationship("Category", back_populates="products")
 
     # Relación con ventas (uno a muchos)
-    sales = relationship("Sale", back_populates="product")
+    sales = relationship("Sale", back_populates="product", cascade="all, delete-orphan")
 
 class Sale(Base):
     __tablename__ = 'sales'
@@ -65,15 +65,11 @@ class Sale(Base):
     product_id = Column(Integer, ForeignKey('product.product_id'), nullable=False)
     price = Column(Float, nullable=False)
     quantity = Column(Integer, nullable=False)
-
-    # Relación con cliente (muchos a uno)
-    customer = relationship("Customer", back_populates="sales")
-
-    # Relación con producto (muchos a uno)
-    product = relationship("Product", back_populates="sales")
-
-    # Relación con empleado (muchos a uno)
     employee_id = Column(Integer, ForeignKey('employee.employee_id'), nullable=False)
+
+    # Relaciones con cliente, producto y empleado
+    customer = relationship("Customer", back_populates="sales")
+    product = relationship("Product", back_populates="sales")
     employee = relationship("Employee", back_populates="sales")
 
     # Propiedad de columna para 'total', leer directamente desde la base de datos
@@ -81,3 +77,4 @@ class Sale(Base):
         Column(Float, nullable=False, server_default='0'),
         deferred=True
     )
+
