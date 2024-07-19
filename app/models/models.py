@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, column_property
 from database.database import Base
 
 class Customer(Base):
@@ -65,7 +65,6 @@ class Sale(Base):
     product_id = Column(Integer, ForeignKey('product.product_id'), nullable=False)
     price = Column(Float, nullable=False)
     quantity = Column(Integer, nullable=False)
-    total = Column(Float, nullable=False)
 
     # Relación con cliente (muchos a uno)
     customer = relationship("Customer", back_populates="sales")
@@ -76,3 +75,9 @@ class Sale(Base):
     # Relación con empleado (muchos a uno)
     employee_id = Column(Integer, ForeignKey('employee.employee_id'), nullable=False)
     employee = relationship("Employee", back_populates="sales")
+
+    # Propiedad de columna para 'total', leer directamente desde la base de datos
+    total = column_property(
+        Column(Float, nullable=False, server_default='0'),
+        deferred=True
+    )
