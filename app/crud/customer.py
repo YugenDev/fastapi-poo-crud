@@ -40,7 +40,7 @@ def get_db():
         db.close()
 
 # Metodo para obtener todos los clientes
-@router.get("/customers/", response_model=list[Customer])
+@router.get("/customers/", response_model=list[GetCustomerID])
 def get_customers(db: Session = Depends(get_db)):
     customers = db.query(DBCustomer).all()
     return customers
