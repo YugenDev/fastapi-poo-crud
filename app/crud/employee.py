@@ -19,6 +19,15 @@ class Employee(BaseModel):
     class Config:
         from_attributes = True
 
+# Esquema de pydantic con el id excluido para la creación y edición de empleados
+class CreateEmployee(BaseModel):
+    employee_name: str
+    employee_last_name: str
+    email: str
+    employee_password: str
+    salary: float
+    position: str
+
 # Función para obtener la sesión de la base de datos
 def get_db():
     db = SessionLocal()
@@ -29,7 +38,7 @@ def get_db():
 
 
 # Metodo para crear un empleado
-@router.post("/employees/", response_model=Employee)
+@router.post("/employees/", response_model=CreateEmployee)
 def create_employee(employee: Employee, db: Session = Depends(get_db)):
     db_employee = DBEmployee(**employee.dict())
     db.add(db_employee)
