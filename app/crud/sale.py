@@ -15,11 +15,10 @@ class Sale(BaseModel):
     product_id: int
     price: float
     quantity: int
-    total: price * quantity
     employee_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Función para obtener la sesión de la base de datos
 def get_db():
@@ -52,7 +51,6 @@ def create_sale(sale: Sale, db: Session = Depends(get_db)):
         product_id=sale.product_id,
         price=sale.price,
         quantity=sale.quantity,
-        total=sale.total,
         employee_id=sale.employee_id
     )
     db.add(db_sale)
@@ -70,7 +68,6 @@ def update_sale(sale_id: int, sale: Sale, db: Session = Depends(get_db)):
         db_sale.product_id = sale.product_id
         db_sale.price = sale.price
         db_sale.quantity = sale.quantity
-        db_sale.total = sale.total
         db_sale.employee_id = sale.employee_id
 
         db.commit()
