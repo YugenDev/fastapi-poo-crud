@@ -1,35 +1,30 @@
-from pydantic import BaseModel
-from models.models import Employee as DBEmployee
-from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, EmailStr
+from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy.orm import Session
 from database.database import SessionLocal
+from models.models import Employee as DBEmployee
 
 router = APIRouter()
 
-# Esquema universal de pydantic para operaciones del CRUD
-class Employee(BaseModel):
+# Esquema de pydantic para operaciones CRUD de empleados
+class EmployeeBase(BaseModel):
+    employee_name: str
+    employee_last_name: str
+    email: EmailStr
+    employee_password: str
+    salary: float
+    position: str
+
+    class Config:
+        orm_mode = True
+
+# Esquema de pydantic para la creación de empleados
+class CreateEmployee(EmployeeBase):
+    pass
+
+# Esquema de pydantic para la respuesta de empleados con ID
+class Employee(EmployeeBase):
     employee_id: int
-    employee_name: str
-    employee_last_name: str
-    email: str
-    employee_password: str
-    salary: float
-    position: str
-
-    class Config:
-        from_attributes = True
-
-# Esquema de pydantic con el id excluido para la creación y edición de empleados
-class CreateEmployee(BaseModel):
-    employee_name: str
-    employee_last_name: str
-    email: str
-    employee_password: str
-    salary: float
-    position: str
-
-    class Config:
-        from_attributes = True
 
 # Función para obtener la sesión de la base de datos
 def get_db():
@@ -39,52 +34,50 @@ def get_db():
     finally:
         db.close()
 
-
-# Metodo para crear un empleado
-@router.post("/employees/", response_model=CreateEmployee)
-def create_employee(employee: Employee, db: Session = Depends(get_db)):
+# Método para crear un empleado
+@router.post("/employees/", response_model=Employee)
+def create_employee(employee: CreateEmployee, db: Session = Depends(get_db)):
     db_employee = DBEmployee(**employee.dict())
     db.add(db_employee)
     db.commit()
     db.refresh(db_employee)
     return db_employee
 
-# Metodo para obtener todos los empleados
+# Método para obtener todos los empleados
 @router.get("/employees/", response_model=list[Employee])
 def get_employees(db: Session = Depends(get_db)):
     employees = db.query(DBEmployee).all()
     return employees
 
-# Metodo para obtener un empleado por su id
+# Método para obtener un empleado por su ID
 @router.get("/employees/{employee_id}", response_model=Employee)
-def read_employee(employee_id: int, db: Session = Depends(get_db)):
+def read_employee(employee_id: int = Path(..., gt=0), db: Session = Depends(get_db)):
     db_employee = db.query(DBEmployee).filter(DBEmployee.employee_id == employee_id).first()
     if db_employee is None:
         raise HTTPException(status_code=404, detail="Employee not found")
     return db_employee
 
-# Metodo para actualizar un empleado
+# Método para actualizar un empleado
 @router.put("/employees/{employee_id}", response_model=Employee)
-def update_employee(employee_id: int, employee: Employee, db: Session = Depends(get_db)):
+def update_employee(employee_id: int, employee: EmployeeBase, db: Session = Depends(get_db)):
     db_employee = db.query(DBEmployee).filter(DBEmployee.employee_id == employee_id).first()
-    if db_employee:
-        # Actualizar los atributos del empleado
-        db_employee.employee_name = employee.employee_name
-        db_employee.employee_last_name = employee.employee_last_name
-        db_employee.email = employee.email
-        db_employee.employee_password = employee.employee_password
-        db_employee.salary = employee.salary
-        db_employee.position = employee.position
-
-        db.commit()
-        db.refresh(db_employee)
+    if db_employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    for field, value in employee.dict(exclude_unset=True).items():
+        setattr(db_employee, field, value)
+    
+    db.commit()
+    db.refresh(db_employee)
     return db_employee
 
-# Metodo para borrar un empleado
+# Método para borrar un empleado
 @router.delete("/employees/{employee_id}", response_model=Employee)
 def delete_employee(employee_id: int, db: Session = Depends(get_db)):
     db_employee = db.query(DBEmployee).filter(DBEmployee.employee_id == employee_id).first()
-    if db_employee:
-        db.delete(db_employee)
-        db.commit()
+    if db_employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    db.delete(db_employee)
+    db.commit()
     return db_employee

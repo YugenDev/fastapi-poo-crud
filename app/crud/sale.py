@@ -1,15 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy.orm import Session
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from datetime import datetime
 from database.database import SessionLocal
-from models.models import Sale as DBSale, Customer, Product, Employee
-from sqlalchemy import func
+from models.models import Sale as DBSale
 
 router = APIRouter()
 
-# Esquema universal de pydantic para operaciones
-class Sale(BaseModel):
+# Esquema pydantic para operaciones CRUD de ventas
+class SaleBase(BaseModel):
     sale_date: datetime = Field(default_factory=datetime.utcnow)
     customer_id: int
     product_id: int
@@ -17,22 +16,20 @@ class Sale(BaseModel):
     quantity: int
     employee_id: int
 
-    class Config:
-        from_attributes = True
+    @validator('sale_date', pre=True, always=True)
+    def default_sale_date(cls, v):
+        return v or datetime.utcnow()
 
-# Esquema para obtener una venta con id incluido
-class GetSale(BaseModel):
+    class Config:
+        orm_mode = True
+
+# Esquema pydantic para la creación de ventas
+class CreateSale(SaleBase):
+    pass
+
+# Esquema pydantic para la respuesta de ventas con ID
+class Sale(SaleBase):
     sale_id: int
-    sale_date: datetime = Field(default_factory=datetime.utcnow)
-    customer_id: int
-    product_id: int
-    price: float
-    quantity: int
-    total: float
-    employee_id: int
-
-    class Config:
-        from_attributes = True
 
 # Función para obtener la sesión de la base de datos
 def get_db():
@@ -42,57 +39,50 @@ def get_db():
     finally:
         db.close()
 
-# Metodo para obtener todas las ventas
-@router.get("/sales/", response_model=list[GetSale])
+# Método para obtener todas las ventas
+@router.get("/sales/", response_model=list[Sale])
 def get_sales(db: Session = Depends(get_db)):
     sales = db.query(DBSale).all()
     return sales
 
-# Metodo para obtener una venta por su id
-@router.get("/sales/{sale_id}", response_model=GetSale)
-def read_sale(sale_id: int, db: Session = Depends(get_db)):
+# Método para obtener una venta por su ID
+@router.get("/sales/{sale_id}", response_model=Sale)
+def read_sale(sale_id: int = Path(..., gt=0), db: Session = Depends(get_db)):
     db_sale = db.query(DBSale).filter(DBSale.sale_id == sale_id).first()
     if db_sale is None:
         raise HTTPException(status_code=404, detail="Sale not found")
     return db_sale
 
-# Metodo para crear una venta
+# Método para crear una venta
 @router.post("/sales/", response_model=Sale)
-def create_sale(sale: Sale, db: Session = Depends(get_db)):
-    db_sale = DBSale(
-        sale_date=func.now(),  # Utilizamos func.now() de SQLAlchemy para la fecha actual
-        customer_id=sale.customer_id,
-        product_id=sale.product_id,
-        price=sale.price,
-        quantity=sale.quantity,
-        employee_id=sale.employee_id
-    )
+def create_sale(sale: CreateSale, db: Session = Depends(get_db)):
+    db_sale = DBSale(**sale.dict())
     db.add(db_sale)
     db.commit()
     db.refresh(db_sale)
     return db_sale
 
-# Metodo para actualizar una venta
+# Método para actualizar una venta
 @router.put("/sales/{sale_id}", response_model=Sale)
-def update_sale(sale_id: int, sale: Sale, db: Session = Depends(get_db)):
+def update_sale(sale_id: int, sale: SaleBase, db: Session = Depends(get_db)):
     db_sale = db.query(DBSale).filter(DBSale.sale_id == sale_id).first()
-    if db_sale:
-        db_sale.sale_date = func.now()  # Actualizamos la fecha de venta con la fecha actual
-        db_sale.customer_id = sale.customer_id
-        db_sale.product_id = sale.product_id
-        db_sale.price = sale.price
-        db_sale.quantity = sale.quantity
-        db_sale.employee_id = sale.employee_id
-
-        db.commit()
-        db.refresh(db_sale)
+    if db_sale is None:
+        raise HTTPException(status_code=404, detail="Sale not found")
+    
+    for field, value in sale.dict(exclude_unset=True).items():
+        setattr(db_sale, field, value)
+    
+    db.commit()
+    db.refresh(db_sale)
     return db_sale
 
-# Metodo para eliminar una venta
+# Método para eliminar una venta
 @router.delete("/sales/{sale_id}", response_model=Sale)
 def delete_sale(sale_id: int, db: Session = Depends(get_db)):
     db_sale = db.query(DBSale).filter(DBSale.sale_id == sale_id).first()
-    if db_sale:
-        db.delete(db_sale)
-        db.commit()
+    if db_sale is None:
+        raise HTTPException(status_code=404, detail="Sale not found")
+
+    db.delete(db_sale)
+    db.commit()
     return db_sale
