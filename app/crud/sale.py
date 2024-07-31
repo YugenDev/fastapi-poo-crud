@@ -40,13 +40,13 @@ def get_db():
         db.close()
 
 # Método para obtener todas las ventas
-@router.get("/sales/", response_model=list[Sale])
+@router.get("/", response_model=list[Sale])
 def get_sales(db: Session = Depends(get_db)):
     sales = db.query(DBSale).all()
     return sales
 
 # Método para obtener una venta por su ID
-@router.get("/sales/{sale_id}", response_model=Sale)
+@router.get("/{sale_id}", response_model=Sale)
 def read_sale(sale_id: int = Path(..., gt=0), db: Session = Depends(get_db)):
     db_sale = db.query(DBSale).filter(DBSale.sale_id == sale_id).first()
     if db_sale is None:
@@ -54,7 +54,7 @@ def read_sale(sale_id: int = Path(..., gt=0), db: Session = Depends(get_db)):
     return db_sale
 
 # Método para crear una venta
-@router.post("/sales/", response_model=Sale)
+@router.post("/", response_model=Sale)
 def create_sale(sale: CreateSale, db: Session = Depends(get_db)):
     db_sale = DBSale(**sale.dict())
     db.add(db_sale)
@@ -63,7 +63,7 @@ def create_sale(sale: CreateSale, db: Session = Depends(get_db)):
     return db_sale
 
 # Método para actualizar una venta
-@router.put("/sales/{sale_id}", response_model=Sale)
+@router.put("/{sale_id}", response_model=Sale)
 def update_sale(sale_id: int, sale: SaleBase, db: Session = Depends(get_db)):
     db_sale = db.query(DBSale).filter(DBSale.sale_id == sale_id).first()
     if db_sale is None:
@@ -77,7 +77,7 @@ def update_sale(sale_id: int, sale: SaleBase, db: Session = Depends(get_db)):
     return db_sale
 
 # Método para eliminar una venta
-@router.delete("/sales/{sale_id}", response_model=Sale)
+@router.delete("/{sale_id}", response_model=Sale)
 def delete_sale(sale_id: int, db: Session = Depends(get_db)):
     db_sale = db.query(DBSale).filter(DBSale.sale_id == sale_id).first()
     if db_sale is None:

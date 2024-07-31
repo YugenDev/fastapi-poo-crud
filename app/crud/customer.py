@@ -31,13 +31,13 @@ def get_db():
         db.close()
 
 # Método para obtener todos los clientes
-@router.get("/customers/", response_model=list[Customer])
+@router.get("/", response_model=list[Customer])
 def get_customers(db: Session = Depends(get_db)):
     customers = db.query(DBCustomer).all()
     return customers
 
 # Método para obtener un cliente por su id
-@router.get("/customers/{customer_id}", response_model=Customer)
+@router.get("/{customer_id}", response_model=Customer)
 def read_customer(customer_id: int = Path(..., gt=0), db: Session = Depends(get_db)):
     db_customer = db.query(DBCustomer).filter(DBCustomer.customer_id == customer_id).first()
     if db_customer is None:
@@ -45,16 +45,16 @@ def read_customer(customer_id: int = Path(..., gt=0), db: Session = Depends(get_
     return db_customer
 
 # Método para crear un cliente
-@router.post("/customers/", response_model=Customer)
+@router.post("/", response_model=Customer)
 def create_customer(customer: CustomerBase, db: Session = Depends(get_db)):
-    db_customer = DBCustomer(**customer.dict())
-    db.add(db_customer)
-    db.commit()
-    db.refresh(db_customer)
+    db_customer = DBCustomer(**customer.dict())hajhahja
+    db.add(db_customer)hajhahja
+    db.commit()hajhahja
+    db.refresh(db_customer)hajhahja
     return db_customer
 
 # Método para actualizar un cliente
-@router.put("/customers/{customer_id}", response_model=Customer)
+@router.put("/{customer_id}", response_model=Customer)
 def update_customer(customer_id: int, customer: CustomerBase, db: Session = Depends(get_db)):
     db_customer = db.query(DBCustomer).filter(DBCustomer.customer_id == customer_id).first()
     if db_customer is None:
@@ -68,7 +68,7 @@ def update_customer(customer_id: int, customer: CustomerBase, db: Session = Depe
     return db_customer
 
 # Método para eliminar un cliente
-@router.delete("/customers/{customer_id}", response_model=Customer)
+@router.delete("/{customer_id}", response_model=Customer)
 def delete_customer(customer_id: int, db: Session = Depends(get_db)):
     db_customer = db.query(DBCustomer).filter(DBCustomer.customer_id == customer_id).first()
     if db_customer is None:

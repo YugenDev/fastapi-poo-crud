@@ -35,7 +35,7 @@ def get_db():
         db.close()
 
 # Método para crear un empleado
-@router.post("/employees/", response_model=Employee)
+@router.post("/", response_model=Employee)
 def create_employee(employee: CreateEmployee, db: Session = Depends(get_db)):
     db_employee = DBEmployee(**employee.dict())
     db.add(db_employee)
@@ -44,13 +44,13 @@ def create_employee(employee: CreateEmployee, db: Session = Depends(get_db)):
     return db_employee
 
 # Método para obtener todos los empleados
-@router.get("/employees/", response_model=list[Employee])
+@router.get("/", response_model=list[Employee])
 def get_employees(db: Session = Depends(get_db)):
     employees = db.query(DBEmployee).all()
     return employees
 
 # Método para obtener un empleado por su ID
-@router.get("/employees/{employee_id}", response_model=Employee)
+@router.get("/{employee_id}", response_model=Employee)
 def read_employee(employee_id: int = Path(..., gt=0), db: Session = Depends(get_db)):
     db_employee = db.query(DBEmployee).filter(DBEmployee.employee_id == employee_id).first()
     if db_employee is None:
@@ -58,7 +58,7 @@ def read_employee(employee_id: int = Path(..., gt=0), db: Session = Depends(get_
     return db_employee
 
 # Método para actualizar un empleado
-@router.put("/employees/{employee_id}", response_model=Employee)
+@router.put("/{employee_id}", response_model=Employee)
 def update_employee(employee_id: int, employee: EmployeeBase, db: Session = Depends(get_db)):
     db_employee = db.query(DBEmployee).filter(DBEmployee.employee_id == employee_id).first()
     if db_employee is None:
@@ -72,7 +72,7 @@ def update_employee(employee_id: int, employee: EmployeeBase, db: Session = Depe
     return db_employee
 
 # Método para borrar un empleado
-@router.delete("/employees/{employee_id}", response_model=Employee)
+@router.delete("/{employee_id}", response_model=Employee)
 def delete_employee(employee_id: int, db: Session = Depends(get_db)):
     db_employee = db.query(DBEmployee).filter(DBEmployee.employee_id == employee_id).first()
     if db_employee is None:

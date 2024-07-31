@@ -35,13 +35,13 @@ def get_db():
         db.close()
 
 # Método para obtener todos los productos
-@router.get("/products/", response_model=list[Product])
+@router.get("/", response_model=list[Product])
 def get_products(db: Session = Depends(get_db)):
     products = db.query(DBProduct).all()
     return products
 
 # Método para obtener un producto por su ID
-@router.get("/products/{product_id}", response_model=Product)
+@router.get("/{product_id}", response_model=Product)
 def read_product(product_id: int = Path(..., gt=0), db: Session = Depends(get_db)):
     db_product = db.query(DBProduct).filter(DBProduct.product_id == product_id).first()
     if db_product is None:
@@ -49,7 +49,7 @@ def read_product(product_id: int = Path(..., gt=0), db: Session = Depends(get_db
     return db_product
 
 # Método para crear un producto
-@router.post("/products/", response_model=Product)
+@router.post("/", response_model=Product)
 def create_product(product: CreateProduct, db: Session = Depends(get_db)):
     db_product = DBProduct(**product.dict())
     db.add(db_product)
@@ -58,7 +58,7 @@ def create_product(product: CreateProduct, db: Session = Depends(get_db)):
     return db_product
 
 # Método para actualizar un producto
-@router.put("/products/{product_id}", response_model=Product)
+@router.put("/{product_id}", response_model=Product)
 def update_product(product_id: int, product: ProductBase, db: Session = Depends(get_db)):
     db_product = db.query(DBProduct).filter(DBProduct.product_id == product_id).first()
     if db_product is None:
@@ -72,7 +72,7 @@ def update_product(product_id: int, product: ProductBase, db: Session = Depends(
     return db_product
 
 # Método para eliminar un producto
-@router.delete("/products/{product_id}", response_model=Product)
+@router.delete("/{product_id}", response_model=Product)
 def delete_product(product_id: int, db: Session = Depends(get_db)):
     db_product = db.query(DBProduct).filter(DBProduct.product_id == product_id).first()
     if db_product is None:
