@@ -47,10 +47,10 @@ def read_customer(customer_id: int = Path(..., gt=0), db: Session = Depends(get_
 # Método para crear un cliente
 @router.post("/", response_model=Customer)
 def create_customer(customer: CustomerBase, db: Session = Depends(get_db)):
-    db_customer = DBCustomer(**customer.dict())hajhahja
-    db.add(db_customer)hajhahja
-    db.commit()hajhahja
-    db.refresh(db_customer)hajhahja
+    db_customer = DBCustomer(**customer.dict())
+    db.add(db_customer)
+    db.commit()
+    db.refresh(db_customer)
     return db_customer
 
 # Método para actualizar un cliente
