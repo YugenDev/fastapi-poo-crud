@@ -2,7 +2,7 @@ version: '2.29.0'
 
 services:
   app:
-    build: .
+    build: ./app
     ports:
       - "8000:80"
     depends_on:
@@ -11,7 +11,7 @@ services:
       - SQLALCHEMY_DATABASE_URL=postgresql://myuser:mypassword@db/TiendaJPBB
 
   db:
-    build: ./database
+    build: ./app/database
     image: postgres:latest
     environment:
       POSTGRES_DB: TiendaJPBB
